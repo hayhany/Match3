@@ -48,12 +48,26 @@ public class Board : MonoBehaviour
         if ((matchable1.X == matchable2.X && Math.Abs(matchable1.Y - matchable2.Y) == 1) ||
             (matchable1.Y == matchable2.Y && Math.Abs(matchable1.X - matchable2.X) == 1))
         {
-            if (matchable1.TryMatch(matchable2))
-                return true;
+            // swap blocks
+            SetBlock(matchable2.X, matchable2.Y, matchable1.BlockData.Identifier);
+            SetBlock(matchable1.X, matchable1.Y, matchable2.BlockData.Identifier);
+
+            bool matched = false;
+
+            if (GetBlock(matchable1.X, matchable1.Y).TryMatch(GetBlock(matchable2.X, matchable2.Y)))
+                matched = true;
+            else if (GetBlock(matchable2.X, matchable2.Y).TryMatch(GetBlock(matchable1.X, matchable1.Y)))
+                matched = true;
+
             else
-                return matchable2.TryMatch(matchable1);
+            {
+                SetBlock(matchable1.X, matchable1.Y, matchable1.BlockData.Identifier);
+                SetBlock(matchable2.X, matchable2.Y, matchable2.BlockData.Identifier);
+                // swap them back
+            }
+
+            return matched;
         }
-            
 
         return false;
     }
@@ -79,7 +93,6 @@ public class Board : MonoBehaviour
 
         Matchable removedBlock = boardData[y, x];
         boardData[y, x] = null;
-        Debug.Log($"<color=red> removed block in location {x}, {y}</color>");
 
         OnRemovedBlock?.Invoke(removedBlock, affectPhysics);
 

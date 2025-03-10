@@ -18,6 +18,5 @@ MonoBehaviour:
   Color: {r: 0, g: 0, b: 1, a: 1}
   MatchConditionsAndResponses:
     _serializedList:
-    - Key: {fileID: 11400000, guid: 4402f4b9aa559df4091e30d5564c7657, type: 2}
-      Value:
-      - {fileID: 11400000, guid: 1d39c976b5a1746408c613ebb0500c17, type: 2}
+    - Key: {fileID: 11400000, guid: b173110adb00b9d438c1e33a835c7961, type: 2}
+      Value: []

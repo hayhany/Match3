@@ -1,8 +1,6 @@
-using Codice.CM.Common.Update.Partial;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,8 +16,8 @@ public class BoardObjectPresentor : MonoBehaviour
     [SerializeField] private float RelativeCascadeSpeed = 1f;
 
     private bool _dequeueing;
-    private Queue<Tuple<Matchable, Action<Matchable>>> displayActionQueue = new Queue<Tuple<Matchable, Action<Matchable>>>();
-    private Dictionary<Matchable, MatchBlockObject> matchObjects = new Dictionary<Matchable, MatchBlockObject>();
+    private readonly Queue<Tuple<Matchable, Action<Matchable>>> displayActionQueue = new();
+    private readonly Dictionary<Vector2, MatchBlockObject> matchObjects = new();
 
     private void Awake()
     {
@@ -31,7 +29,7 @@ public class BoardObjectPresentor : MonoBehaviour
 
     private void Board_OnRemovedBlock1(Matchable matchable, bool affectPhysics)
     {
-        if (!matchObjects.ContainsKey(matchable))
+        if (!matchObjects.ContainsKey(new Vector2(matchable.X, matchable.Y)))
             return;
 
         displayActionQueue.Enqueue(new Tuple<Matchable, Action<Matchable>>(matchable, RemoveAction));
@@ -42,28 +40,20 @@ public class BoardObjectPresentor : MonoBehaviour
     {
         DestroyAllChildren(gridLayout.transform);
         SetGridSizes(board.Width, board.Height);
-
-        //for (int i = 0; i < board.Height; i++)
-        //{
-        //    for (int j = 0; j < board.Width; j++)
-        //    {
-        //        // enqueue the blocks so we get a cascading effect
-        //        Matchable block = board.GetBlock(j, i);
-        //        displayActionQueue.Enqueue(new Tuple<Matchable, Action<Matchable>>(block, CreateAction));
-        //    }
-        //}
     }
 
     private void RemoveAction(Matchable matchable)
     {
-        if (!matchObjects.TryGetValue(matchable, out MatchBlockObject matchObject))
+        Vector2 matchPos = new Vector2(matchable.X, matchable.Y);
+        if (!matchObjects.TryGetValue(matchPos, out MatchBlockObject matchObject))
             return;
 
         Destroy(matchObject.gameObject);
         GameObject empty = Instantiate(emptyObjectPrefab, gridLayout.transform);
         empty.transform.SetSiblingIndex(GetSiblingIndexForPos(matchable.X, matchable.Y));
 
-        matchObjects.Remove(matchable);
+        matchObjects.Remove(matchPos);
+        Debug.Log($"<color=red> removed block in location {matchable.X}, {matchable.Y}</color>");
     }
 
     private void CreateAction(Matchable matchable)
@@ -72,7 +62,7 @@ public class BoardObjectPresentor : MonoBehaviour
         if (gridLayout.transform.childCount > siblingIndex)
         {
             GameObject placeObject = gridLayout.transform.GetChild(siblingIndex).gameObject;
-            if (placeObject.tag.Equals("Empty"))
+            if (placeObject.CompareTag("Empty"))
                 Destroy(placeObject);
         }
 
@@ -80,7 +70,9 @@ public class BoardObjectPresentor : MonoBehaviour
         blockObject.transform.SetSiblingIndex(siblingIndex);
         blockObject.Init(matchable);
 
-        matchObjects[matchable] = blockObject;
+        Debug.Log($"<color=green> created block in location {matchable.X}, {matchable.Y}</color>");
+
+        matchObjects[new Vector2(matchable.X, matchable.Y)] = blockObject;
     }
 
     private int GetSiblingIndexForPos(int x, int y) => (board.Width * y) + x;
@@ -98,7 +90,7 @@ public class BoardObjectPresentor : MonoBehaviour
     }
 
     // no fbi pls
-    private void DestroyAllChildren(Transform trans)
+    private static void DestroyAllChildren(Transform trans)
     {
         foreach (Transform child in trans)
             Destroy(child.gameObject);

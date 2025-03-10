@@ -1,9 +1,6 @@
-using Codice.Client.Common.GameUI;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(Board))]
 public class BoardPhysicalInteractor : MonoBehaviour
@@ -55,39 +52,33 @@ public class BoardPhysicalInteractor : MonoBehaviour
     {
         if (!affectPhysics)
             return;
-        // list blocks from bottom to top
+
+        // we only want the unique X positioned blocks, and the lowest ones if we have more
         blocksToRemove.Sort((blockA, blockB) => blockB.Y.CompareTo(blockA.Y));
+        blocksToRemove = blocksToRemove.GroupBy((matchable) => matchable.X).Select(x => x.FirstOrDefault()).ToList();
 
-        // 2, 6
-        // 2, 7
-        // 4, 7
-
-        Matchable matchable = blocksToRemove[0];
-        // climb up the board until encountering a block
-        int setY = matchable.Y;
-        for (int checkY = matchable.Y - 1; checkY >= 0; checkY--)
+        foreach (var block in blocksToRemove)
         {
-            Matchable checkBlock = board.GetBlock(matchable.X, checkY);
+            int setY = block.Y;
 
-            // if encountered a block, remove it and set it on our (empty) location
-            if (checkBlock != null)
+            // climb up the board until encountering a block
+            for (int checkY = setY - 1; checkY >= 0; checkY--)
             {
-                board.RemoveBlock(checkBlock.X, checkBlock.Y, false);
-                board.SetBlock(checkBlock.X, setY, checkBlock.BlockData.Identifier);
-                setY--;
-                //break;
+                Matchable checkBlock = board.GetBlock(block.X, checkY);
+
+                // if encountered a block, remove it and set it on our (empty) location
+                if (checkBlock != null)
+                {
+                    board.RemoveBlock(checkBlock.X, checkBlock.Y, false);
+                    board.SetBlock(checkBlock.X, setY, checkBlock.BlockData.Identifier);
+                    setY--;
+                }
             }
-        }
 
-        Matchable highestRemoved = blocksToRemove[blocksToRemove.Count - 1];
-
-        for (; setY >= 0; setY--)
-        {
-            Debug.Log($"set block at {highestRemoved.X}, {setY}");
-            board.SetBlockRandom(highestRemoved.X, setY);
+            // set blocks for all the remaining empty spots
+            for (; setY >= 0; setY--)
+                board.SetBlockRandom(block.X, setY);
         }
-        /*
-        */
     }
 
     private void Matchable_OnClicked(MatchBlockObject matchObject)

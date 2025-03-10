@@ -10,7 +10,7 @@ public class DestroyMatchedResponse : MatchResponse
     public override void Respond(Matchable thisMatchable, Matchable otherMatchable)
     {
         // fuck me if this doesn't work
-        thisMatchable.CurrentBoard.RemoveBlocks(new List<Vector2> { new Vector2(thisMatchable.X, thisMatchable.Y), new Vector2(otherMatchable.X, otherMatchable.Y - 3) });
+        thisMatchable.CurrentBoard.RemoveBlocks(new List<Vector2> { new Vector2(thisMatchable.X, thisMatchable.Y), new Vector2(otherMatchable.X, otherMatchable.Y) });
     }
 
     private void RemoveBlocksByHeight(List<Matchable> matchablesToRemove)

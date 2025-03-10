@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 187f7bd1db5b4b74983187b61878bbad, type: 3}
-  m_Name: RowMatchCondition
+  m_Script: {fileID: 11500000, guid: 066f80402a2913d4ea757412dd2d62e6, type: 3}
+  m_Name: Match3Condition
   m_EditorClassIdentifier: 
-  test: 0
+  Length: 3
