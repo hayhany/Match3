@@ -11,31 +11,36 @@ public class RowColumnMatchCondition : MatchCondition
     // add out parameter for blocks that we checked for, also add list parameter for responses
     public override bool IsConditionMet(Matchable thisMatchable, Matchable otherMatchable, out List<Matchable> relatedBlocks)
     {
-        relatedBlocks = null;
-        int matchCount = 0;
+        relatedBlocks = new List<Matchable>();
 
-        // check column
-        
+        int adjusted = Length - 1;
 
-        int startCheckY = Math.Max(0, thisMatchable.Y - (Length - 1)); // spots available above for checking1
-        for (int i = startCheckY; i < thisMatchable.Y + (Length - 1); i++)
+        for (int i = Math.Clamp(thisMatchable.Y - adjusted, 0, thisMatchable.CurrentBoard.Height - 1); i < Math.Min (thisMatchable.Y + Length, thisMatchable.CurrentBoard.Height); i++)
         {
-            if (thisMatchable.CurrentBoard.GetBlock(thisMatchable.X, i).BlockData.Identifier == thisMatchable.BlockData.Identifier)
-                matchCount++;
+            Matchable matchable = thisMatchable.CurrentBoard.GetBlock(thisMatchable.X, i);
+            if (relatedBlocks.Count == Length)
+                break;
+            else if (matchable.BlockData.Identifier == thisMatchable.BlockData.Identifier)
+                relatedBlocks.Add(matchable);
+            else
+                relatedBlocks.Clear();
         }
 
-        if (matchCount < Length)
-        {
-            matchCount = 0;
+        if (relatedBlocks.Count == Length)
+            return true;
 
-            int startCheckX = Math.Max(0, thisMatchable.X - (Length - 1)); // spots available above for checking1
-            for (int i = startCheckX; i < thisMatchable.X + (Length - 1); i++)
-            {
-                if (thisMatchable.CurrentBoard.GetBlock(i, thisMatchable.Y).BlockData.Identifier == thisMatchable.BlockData.Identifier)
-                    matchCount++;
-            }
+        relatedBlocks.Clear();
+        for (int i = Math.Clamp(thisMatchable.X - adjusted, 0, thisMatchable.CurrentBoard.Width - 1); i < Math.Min(thisMatchable.X + Length, thisMatchable.CurrentBoard.Width); i++)
+        {
+            Matchable matchable = thisMatchable.CurrentBoard.GetBlock(i, thisMatchable.Y);
+            if (relatedBlocks.Count == Length)
+                break;
+            else if (matchable.BlockData.Identifier == thisMatchable.BlockData.Identifier)
+                relatedBlocks.Add(matchable);
+            else
+                relatedBlocks.Clear();
         }
 
-        return matchCount == Length;
+        return relatedBlocks.Count == Length;
     }
 }
