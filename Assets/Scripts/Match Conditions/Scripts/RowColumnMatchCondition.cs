@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RowMatchCondition", menuName = "MatchLogic/Conditions/RowColumnMatchCondition")]
@@ -7,12 +9,13 @@ public class RowColumnMatchCondition : MatchCondition
     public int Length;
 
     // add out parameter for blocks that we checked for, also add list parameter for responses
-    public override bool IsConditionMet(Matchable thisMatchable, Matchable otherMatchable)
+    public override bool IsConditionMet(Matchable thisMatchable, Matchable otherMatchable, out List<Matchable> relatedBlocks)
     {
+        relatedBlocks = null;
         int matchCount = 0;
 
         // check column
-
+        
 
         int startCheckY = Math.Max(0, thisMatchable.Y - (Length - 1)); // spots available above for checking1
         for (int i = startCheckY; i < thisMatchable.Y + (Length - 1); i++)

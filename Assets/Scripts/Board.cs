@@ -99,16 +99,15 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    public bool RemoveBlocks(List<Vector2> blocks, bool affectPhysics = true)
+    public bool RemoveBlocks(List<Matchable> blocks, bool affectPhysics = true)
     {
         List<Matchable> removedBlocks = new List<Matchable>();
-        foreach (var pos in blocks)
+        foreach (var block in blocks)
         {
-            int x = (int)pos.x, y = (int)pos.y;
-            if (IsPositionValid(x, y))
+            if (GetBlock(block.X, block.Y).Equals(block))
             {
-                removedBlocks.Add(GetBlock(x, y));
-                RemoveBlock(x, y, false);
+                removedBlocks.Add(block);
+                RemoveBlock(block.X, block.Y, false);
             }
         }
 
@@ -119,6 +118,19 @@ public class Board : MonoBehaviour
         }
 
         return false;
+    }
+
+    public bool RemoveBlocks(List<Vector2> blocks, bool affectPhysics = true)
+    {
+        List<Matchable> removedBlocks = new List<Matchable>();
+        foreach (var pos in blocks)
+        {
+            int x = (int)pos.x, y = (int)pos.y;
+            if (IsPositionValid(x, y))
+                removedBlocks.Add(GetBlock(x, y));
+        }
+
+        return RemoveBlocks(removedBlocks, affectPhysics);
     }
 
     public bool SetBlockRandom(int x, int y) => SetBlock(x, y, MatchGridPool.Instance.GetRandomBlock().Identifier);

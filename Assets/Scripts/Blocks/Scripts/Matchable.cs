@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public class Matchable
 {
@@ -20,10 +21,10 @@ public class Matchable
     {
         foreach (MatchCondition condition in BlockData.MatchConditionsAndResponses.Keys)
         {
-            if (condition.IsConditionMet(this, otherMatchable))
+            if (condition.IsConditionMet(this, otherMatchable, out List<Matchable> relatedBlocks))
             {
                 foreach (MatchResponse response in BlockData.MatchConditionsAndResponses[condition])
-                    response.Respond(this, otherMatchable);
+                    response.Respond(relatedBlocks);
 
                 return true;
             }

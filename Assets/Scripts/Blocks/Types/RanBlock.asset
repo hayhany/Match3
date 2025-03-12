@@ -17,6 +17,4 @@ MonoBehaviour:
   Icon: {fileID: 5674564438359458344, guid: 7df9338264488694da51371e89de7a69, type: 3}
   Color: {r: 1, g: 1, b: 1, a: 1}
   MatchConditionsAndResponses:
-    _serializedList:
-    - Key: {fileID: 11400000, guid: 554e6fa2c6640e144ae9710e6d60646b, type: 2}
-      Value: []
+    _serializedList: []
