@@ -83,25 +83,23 @@ public class BoardPhysicalInteractor : MonoBehaviour
 
     private void Matchable_OnClicked(MatchBlockObject matchObject)
     {
-        if (!matchObject.MatchableData.CurrentBoard.Equals(board))
+        if (!matchObject.MatchableData.CurrentBoard.Equals(board) || !matchObject.IsSelectable || !matchObject.MatchableData.CurrentBoard.IsSelectable)
             return;
 
         if (selectedMatchable != null)
         {
             if (!selectedMatchable.Equals(matchObject))
-            {
                 board.TryMatch(selectedMatchable.MatchableData, matchObject.MatchableData);
-                Debug.Log("Trying to match");
-            }
 
+            matchObject.SetSelected(false);
+            selectedMatchable.SetSelected(false);
             selectedMatchable = null;
-            Debug.Log("Deselected");
         }
 
         else
         {
             selectedMatchable = matchObject;
-            Debug.Log("Selected");
+            matchObject.SetSelected(true);
         }
     }
 }

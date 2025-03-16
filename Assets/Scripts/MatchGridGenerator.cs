@@ -10,7 +10,7 @@ public static class MatchGridGenerator
             for (int j = 0; j < width; j++)
             {
                 // TODO: implement an algorithm to place blocks in a manner that doesn't warrant matches on spawning
-                grid[i,j] = MatchGridPool.Instance.GetRandomBlock().Identifier;
+                grid[i,j] = MatchGridPool.Instance.GetRandomBlock(true).Identifier;
             }
         }
 

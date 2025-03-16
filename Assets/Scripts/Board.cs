@@ -16,13 +16,16 @@ public class Board : MonoBehaviour
     public event System.Action<Matchable, int, int> OnChangedBlock;
     public event System.Action<Matchable> OnAddedBlock;
     public event Action OnInit;
+    public event Action<bool> OnUpdatedSelectableStatus;
+
+    public bool IsSelectable { get; private set; }
 
     public void Init(byte[,] boardData)
     {
         this.boardData = new Matchable[boardData.GetLength(0), boardData.GetLength(1)];
         Height = boardData.GetLength(0);
         Width = boardData.GetLength(1);
-
+        OnInit?.Invoke();
 
         for (int i = 0; i < Height; i++)
         {
@@ -31,8 +34,6 @@ public class Board : MonoBehaviour
                 CreateBlock(j, i, boardData[i, j]);
             }
         }
-
-        OnInit?.Invoke();
     }
 
     private void CreateBlock(int x, int y, byte identifier)
@@ -80,6 +81,8 @@ public class Board : MonoBehaviour
         return boardData[y, x];
     }
 
+
+
     public Matchable[,] GetBlocks()
     {
         return boardData;
@@ -120,6 +123,12 @@ public class Board : MonoBehaviour
         return false;
     }
 
+    public void SetSelectable(bool selectable)
+    {
+        this.IsSelectable = selectable;
+        OnUpdatedSelectableStatus?.Invoke(selectable);
+    }
+
     public bool RemoveBlocks(List<Vector2> blocks, bool affectPhysics = true)
     {
         List<Matchable> removedBlocks = new List<Matchable>();
@@ -133,7 +142,7 @@ public class Board : MonoBehaviour
         return RemoveBlocks(removedBlocks, affectPhysics);
     }
 
-    public bool SetBlockRandom(int x, int y) => SetBlock(x, y, MatchGridPool.Instance.GetRandomBlock().Identifier);
+    public bool SetBlockRandom(int x, int y) => SetBlock(x, y, MatchGridPool.Instance.GetRandomBlock(true).Identifier);
 
     public bool SetBlock(int x, int y, byte identifier)
     {

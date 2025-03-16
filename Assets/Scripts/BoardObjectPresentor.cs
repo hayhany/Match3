@@ -9,11 +9,12 @@ public class BoardObjectPresentor : MonoBehaviour
     [Header("Components")]
     [SerializeField] private GridLayoutGroup gridLayout;
     [SerializeField] private MatchBlockObject matchObjectPrerfab;
-    [SerializeField] private GameObject emptyObjectPrefab;
+    [SerializeField] private MatchBlockObject emptyObjectPrefab;
     [SerializeField] private Board board;
 
     [Header("Other Options")]
-    [SerializeField] private float RelativeCascadeSpeed = 1f;
+    [SerializeField] private float DisplayUpdateRate = 0.005f;
+    [SerializeField] private bool LogMessages = false;
 
     private bool _dequeueing;
     private readonly Queue<Tuple<Matchable, Action<Matchable>>> displayActionQueue = new();
@@ -21,18 +22,23 @@ public class BoardObjectPresentor : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine(DequeueDisplay());
         board.OnInit += Display;
-        board.OnRemovedBlock += Board_OnRemovedBlock1;
-        board.OnAddedBlock += (matchable) => displayActionQueue.Enqueue(new Tuple<Matchable, Action<Matchable>>(matchable, CreateAction));
+        board.OnRemovedBlock += (matchable, _) => ProcessBoardDisplay(matchable, destroy:true);
+        board.OnAddedBlock += (matchable) => ProcessBoardDisplay(matchable, destroy:false);
     }
 
-    private void Board_OnRemovedBlock1(Matchable matchable, bool affectPhysics)
+    private void ProcessBoardDisplay(Matchable matchable, bool destroy = false)
     {
-        if (!matchObjects.ContainsKey(new Vector2(matchable.X, matchable.Y)))
+        if (destroy && !matchObjects.ContainsKey(new Vector2(matchable.X, matchable.Y)))
             return;
 
-        displayActionQueue.Enqueue(new Tuple<Matchable, Action<Matchable>>(matchable, RemoveAction));
+        displayActionQueue.Enqueue(new Tuple<Matchable, Action<Matchable>>(matchable, destroy ? RemoveAction : CreateAction));
+
+        if (!_dequeueing)
+        {
+            Debug.Log("started coroutine");
+            StartCoroutine(DequeueDisplay());
+        }
     }
 
     // TODO: use object pooling
@@ -49,11 +55,13 @@ public class BoardObjectPresentor : MonoBehaviour
             return;
 
         Destroy(matchObject.gameObject);
-        GameObject empty = Instantiate(emptyObjectPrefab, gridLayout.transform);
+        MatchBlockObject empty = Instantiate(emptyObjectPrefab, gridLayout.transform);
         empty.transform.SetSiblingIndex(GetSiblingIndexForPos(matchable.X, matchable.Y));
 
-        matchObjects.Remove(matchPos);
-        Debug.Log($"<color=red> removed block in location {matchable.X}, {matchable.Y}</color>");
+        matchObjects[new Vector2(matchable.X, matchable.Y)] = empty;
+
+        if (LogMessages)
+            Debug.Log($"<color=red> removed block in location {matchable.X}, {matchable.Y}</color>");
     }
 
     private void CreateAction(Matchable matchable)
@@ -67,12 +75,14 @@ public class BoardObjectPresentor : MonoBehaviour
         }
 
         MatchBlockObject blockObject = Instantiate(matchObjectPrerfab, gridLayout.transform);
+        blockObject.name = siblingIndex.ToString();
         blockObject.transform.SetSiblingIndex(siblingIndex);
         blockObject.Init(matchable);
 
-        Debug.Log($"<color=green> created block in location {matchable.X}, {matchable.Y}</color>");
-
         matchObjects[new Vector2(matchable.X, matchable.Y)] = blockObject;
+
+        if (LogMessages)
+            Debug.Log($"<color=green> created block in location {matchable.X}, {matchable.Y}</color>");
     }
 
     private int GetSiblingIndexForPos(int x, int y) => (board.Width * y) + x;
@@ -98,17 +108,18 @@ public class BoardObjectPresentor : MonoBehaviour
 
     private IEnumerator DequeueDisplay()
     {
-        while (true)
-        {
-            _dequeueing = displayActionQueue.Count > 0;
-            if (_dequeueing)
-            {
-                Tuple<Matchable, Action<Matchable>> matchableAction = displayActionQueue.Dequeue();
-                matchableAction.Item2?.Invoke(matchableAction.Item1);
-            }
+        _dequeueing = true;
+        board.SetSelectable(false);
 
-            yield return new WaitForSeconds(0.05f);
-            //yield return new WaitForSeconds(RelativeCascadeSpeed / (gridLayout.cellSize.x * gridLayout.cellSize.y));
+        while (displayActionQueue.Count > 0)
+        {
+            Tuple<Matchable, Action<Matchable>> matchableAction = displayActionQueue.Dequeue();
+            matchableAction.Item2?.Invoke(matchableAction.Item1);
+
+            yield return new WaitForSeconds(DisplayUpdateRate);
         }
+
+        board.SetSelectable(true);
+        _dequeueing = false;
     }
 }

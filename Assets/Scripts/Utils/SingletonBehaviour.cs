@@ -12,7 +12,7 @@ namespace Utils
         }
         private static T _instance;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (Instance == null)
                 Instance = this.GetComponent<T>();

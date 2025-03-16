@@ -420,15 +420,29 @@ MonoBehaviour:
   matchBlockPool:
     _serializedList:
     - Key: 0
-      Value: {fileID: 11400000, guid: ca473abe44d8b274b80063339c576748, type: 2}
+      Value:
+        Block: {fileID: 11400000, guid: ca473abe44d8b274b80063339c576748, type: 2}
+        Spawnable: 1
     - Key: 1
-      Value: {fileID: 11400000, guid: b2e08ed47bc0de4498568c9169d79f2d, type: 2}
+      Value:
+        Block: {fileID: 11400000, guid: b2e08ed47bc0de4498568c9169d79f2d, type: 2}
+        Spawnable: 1
     - Key: 2
-      Value: {fileID: 11400000, guid: b33b3bc8300be99448f0cc9f32a21c75, type: 2}
+      Value:
+        Block: {fileID: 11400000, guid: b33b3bc8300be99448f0cc9f32a21c75, type: 2}
+        Spawnable: 1
     - Key: 3
-      Value: {fileID: 11400000, guid: 8a855088a72fcef48b4b04b9b8ff509b, type: 2}
+      Value:
+        Block: {fileID: 11400000, guid: 8a855088a72fcef48b4b04b9b8ff509b, type: 2}
+        Spawnable: 1
     - Key: 4
-      Value: {fileID: 11400000, guid: 2630d95931916534a8dabadd05142b9b, type: 2}
+      Value:
+        Block: {fileID: 11400000, guid: 2630d95931916534a8dabadd05142b9b, type: 2}
+        Spawnable: 1
+    - Key: 5
+      Value:
+        Block: {fileID: 11400000, guid: 2febb26db6d0be548888a987cde58a8e, type: 2}
+        Spawnable: 0
 --- !u!114 &512606002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -786,6 +800,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 183841835}
     m_Modifications:
+    - target: {fileID: 1875530034003690433, guid: 7ecf5ba17cc11e44aaa418af2f4e2122, type: 3}
+      propertyPath: LogMessages
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875530034003690433, guid: 7ecf5ba17cc11e44aaa418af2f4e2122, type: 3}
+      propertyPath: DisplayUpdateRate
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875530034003690433, guid: 7ecf5ba17cc11e44aaa418af2f4e2122, type: 3}
+      propertyPath: emptyObjectPrefab
+      value: 
+      objectReference: {fileID: 7348035635847722337, guid: 8a6f98e14224e5c438c98e1d17a0f7e8, type: 3}
     - target: {fileID: 4126320199235083797, guid: 7ecf5ba17cc11e44aaa418af2f4e2122, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

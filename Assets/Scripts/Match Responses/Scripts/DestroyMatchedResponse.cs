@@ -7,7 +7,7 @@ using UnityEngine;
 public class DestroyMatchedResponse : MatchResponse
 {
     // respond with destroying both blocks
-    public override void Respond(List<Matchable> blocks)
+    public override void Respond(Matchable thisMatchable, Matchable? otherMatchable, List<Matchable> blocks)
     {
         // fuck me if this doesn't work
         blocks[0].CurrentBoard.RemoveBlocks(blocks);

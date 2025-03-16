@@ -24,7 +24,7 @@ public class Matchable
             if (condition.IsConditionMet(this, otherMatchable, out List<Matchable> relatedBlocks))
             {
                 foreach (MatchResponse response in BlockData.MatchConditionsAndResponses[condition])
-                    response.Respond(relatedBlocks);
+                    response.Respond(this, otherMatchable, relatedBlocks);
 
                 return true;
             }

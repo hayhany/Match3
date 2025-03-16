@@ -7,6 +7,10 @@ using UnityEngine.UI;
 public class MatchBlockObject : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Image icon;
+    [SerializeField] private Outline selectOutline;
+
+    [SerializeField] private bool selectable = true;
+    public bool IsSelectable => selectable;
 
     public Matchable MatchableData { get; private set; }
 
@@ -19,10 +23,14 @@ public class MatchBlockObject : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     }
 
     public void OnPointerDown(PointerEventData eventData) { }
-
     public void OnPointerUp(PointerEventData eventData)
     {
-        OnClicked?.Invoke(this);
+        if (selectable)
+            OnClicked?.Invoke(this);
     }
 
+    public void SetSelected(bool selected)
+    {
+        selectOutline.enabled = selected;
+    }
 }
